@@ -2,11 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -46,24 +50,93 @@ func identixone(w http.ResponseWriter, r *http.Request) {
 		errorLog.Print("upgrade:", err)
 		return
 	}
-	defer func() { _ = c.Close() }()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			errorLog.Println("read:", err)
-			break
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			mt, message, err := c.ReadMessage()
+			if err != nil {
+				errorLog.Println("read:", err)
+				break
+			}
+			outLog.Printf("recv: %s", message)
+			var request interface{}
+			if err := json.Unmarshal(message, &request); err != nil {
+				errorLog.Println("parse error", err)
+				continue
+			}
+			var action string
+			LogPanic(func() {
+				action = request.(map[string]interface{})["action"].(string)
+			})
+			switch action {
+			case "PING":
+				if err := c.WriteMessage(mt, []byte(`{"PING":"PONG"}`)); err != nil {
+					errorLog.Println("write:", err)
+					continue
+				}
+			case "AUTH":
+				var token string
+				LogPanic(func() {
+					token = request.(map[string]interface{})["data"].(map[string]interface{})["token"].(string)
+				})
+				if err := c.WriteMessage(mt, []byte(`{"auth":"ok"}`)); err != nil {
+					errorLog.Println("write:", err)
+					continue
+				}
+			default:
+				errorLog.Println("unknown action")
+			}
 		}
-		outLog.Printf("recv: %s", message)
-		var request interface{}
-		if err := json.Unmarshal(message, &request); err != nil {
+	}()
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		defer func() { _ = c.Close() }()
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				err := c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":34,"sex":0,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
+				if err != nil {
+					return
+				}
+			}
+		}
+	}()
+}
 
+func CatchPanic(f func()) (result error) {
+	defer func() {
+		if r := recover(); r != nil {
+			result = errors.New(fmt.Sprint(r))
 		}
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			errorLog.Println("write:", err)
-			break
+	}()
+	f()
+	return nil
+}
+
+func LogPanic(f func()) {
+	defer func() {
+		if r := recover(); r != nil {
+			errorLog.Println(r)
+			debug.PrintStack()
 		}
-	}
+	}()
+	f()
+}
+
+func CatchAndLogPanic(f func()) (result error) {
+	defer func() {
+		if r := recover(); r != nil {
+			result = errors.New(fmt.Sprint(r))
+			errorLog.Println(r)
+			debug.PrintStack()
+		}
+	}()
+	f()
+	return nil
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
