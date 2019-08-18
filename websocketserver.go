@@ -98,7 +98,19 @@ func identixone(w http.ResponseWriter, r *http.Request) {
 			case <-done:
 				return
 			case <-ticker.C:
-				err := c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":34,"sex":0,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
+				err := c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":20,"sex":0,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
+				if err != nil {
+					return
+				}
+				err = c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":50,"sex":0,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
+				if err != nil {
+					return
+				}
+				err = c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":20,"sex":1,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
+				if err != nil {
+					return
+				}
+				err = c.WriteMessage(websocket.TextMessage, []byte(`{"id":"510fad5b-520f-445d-8691-ce02bd0c94bc","created":"2019-08-16T02:49:11.573059","group":"rtk","data":{"idxid":"","result":"nm","source":"tvbit_test","detected":"2019-08-16T02:49:11.559926Z","created":"","initial_photo":"","detected_photo":"","facesize":133590,"liveness":false,"mood":"neutral","id":"20864463","age":50,"sex":1,"conf":"nm"},"notification":{"id":"694","name":"tvbit"}}`))
 				if err != nil {
 					return
 				}
