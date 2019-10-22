@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -19,30 +20,56 @@ func main() {
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
-var videos = []string{
-	"http://demo.rerotor.ru/media/movies/Spain_Patagonia_cgtxKEr_dFuUOZf.m4v?channel=s361",
-	"http://public.tvbit.co/dummy_videos/Sample1280.mp4",
-	"http://public.tvbit.co/dummy_videos/small.mp4",
-	"http://public.tvbit.co/dummy_videos/file_example_MP4_640_3MG.mp4",
-	"http://public.tvbit.co/dummy_videos/115mb Barcelona in 4K.mp4",
-	"http://public.tvbit.co/dummy_videos/1mb_big_buck_bunny_720p.mp4",
+type Content struct {
+	Id  uint64
+	Url string
 }
 
-var contentId = 0
+var content = []Content{
+	{1, "http://demo.rerotor.ru/media/movies/Spain_Patagonia_cgtxKEr_dFuUOZf.m4v?channel=s361"},
+	{2, "http://public.tvbit.co/dummy_videos/Sample1280.mp4"},
+	{3, "http://public.tvbit.co/dummy_videos/small.mp4"},
+	{4, "http://public.tvbit.co/dummy_videos/file_example_MP4_640_3MG.mp4"},
+	{5, "http://public.tvbit.co/dummy_videos/115mb Barcelona in 4K.mp4"},
+	{6, "http://public.tvbit.co/dummy_videos/1mb_big_buck_bunny_720p.mp4"},
+}
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	var parts = strings.Split(r.URL.Path, "/")
 	var screenCode = parts[len(parts)-1]
-	var videoUrls = func() []string {
-		switch screenCode {
-		case "demo-screen-2k":
-			return []string{videos[0], videos[1]}
-		case "1":
-			return []string{videos[2], videos[3]}
-		case "2":
-			return []string{videos[4], videos[5]}
+	var videoUrls = func() []Content {
+		if len(screenCode) <= 6 || screenCode[:6] != "screen" {
+			return content
+		}
+		i, err := strconv.ParseUint(screenCode[6:], 10, 64)
+		if err != nil {
+			return content
+		}
+		switch i {
+		case 1:
+			return []Content{content[0]}
+		case 2:
+			return []Content{content[1]}
+		case 3:
+			return []Content{content[2]}
+		case 4:
+			return []Content{content[3]}
+		case 5:
+			return []Content{content[4]}
+		case 6:
+			return []Content{content[5]}
+		case 7:
+			return []Content{content[0],content[1]}
+		case 8:
+			return []Content{content[1],content[2]}
+		case 9:
+			return []Content{content[2],content[3]}
+		case 10:
+			return []Content{content[3],content[4]}
+		case 11:
+			return []Content{content[4],content[5]}
 		default:
-			return []string{videos[0]}
+			return content
 		}
 	}()
 	var responseRaw = []byte(`{
@@ -106,9 +133,9 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	var response interface{}
 	_ = json.Unmarshal(responseRaw, &response)
 	var content = make([]interface{}, 0)
+	fmt.Println("video urls", videoUrls)
 	for _, vu := range videoUrls {
 		var chunk interface{}
-		contentId++
 		_ = json.Unmarshal([]byte(fmt.Sprintf(`{
 			"id": %d,
 			"links": [
@@ -121,7 +148,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			"type": 0,
 			"fillmode": 0,
 			"playorder": 7
-		}`, contentId, vu)), &chunk)
+		}`, vu.Id, vu.Url)), &chunk)
 		content = append(content, chunk)
 	}
 	response.(map[string]interface{})["product_info"].(map[string]interface{})["content"] = content
