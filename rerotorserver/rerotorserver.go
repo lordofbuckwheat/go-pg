@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -35,6 +36,23 @@ var content = []Content{
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
+	fmt.Println()
+	if body, err := ioutil.ReadAll(r.Body); err != nil {
+		panic(err)
+	} else if len(body) > 0 {
+		type RequestBody struct {
+			Stats []struct{
+				EventDate string `json:"event_date"`
+				EventCount int64 `json:"event_count"`
+				ContentId uint64 `json:"content_id"`
+			} `json:"stats"`
+		}
+		var requestBody RequestBody
+		if err := json.Unmarshal(body, &requestBody); err != nil {
+			panic(err)
+		}
+		fmt.Printf("request stats %v\n", requestBody)
+	}
 	var parts = strings.Split(r.URL.Path, "/")
 	var screenCode = parts[len(parts)-1]
 	var videoUrls = func() []Content {
