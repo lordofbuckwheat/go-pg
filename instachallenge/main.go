@@ -2,27 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/ahmdrz/goinsta/v2"
-	"log"
+	"github.com/lordofbuckwheat/goinsta/v2"
 )
 
 func main() {
-	//username := flag.String("session", "session.json", "path to config file")
-	//flag.Parse()
-	//session := fmt.Sprintf("sessions/instagram/%s.json", *username)
-	//_, err := os.Stat(session)
-	//if err != nil {
-	// panic(err)
-	//}
-	insta := goinsta.New("palemaltd", "Palema19.")
+	insta := goinsta.New("tvbittest5", "password1234")
 	err := insta.Login()
 	if err != nil {
+		fmt.Println("err", err)
 		switch v := err.(type) {
 		case goinsta.ChallengeError:
-			fmt.Println("err", err)
+			fmt.Println("challenge error", v)
 			err := insta.Challenge.Process(v.Challenge.APIPath)
 			if err != nil {
-				log.Fatalln(err)
+				panic(err)
 			}
 			fmt.Println("123", v, err)
 		}

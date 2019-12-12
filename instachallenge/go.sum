@@ -1,2 +1,4 @@
-github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda h1:GLWPsoxRolnPakJCaDhnfEgeOoe/CkTeXYwTBcMzAcM=
-github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda/go.mod h1:XUEELCWd3hVSqADejqxTa8Uc7Yto9cb6a6HrfkGwVf8=
+github.com/lordofbuckwheat/goinsta/v2 v2.5.1 h1:RVIcgveU/Bv/Sf5FAb4hvilde/Q88qfGc9bV/8uzP2Q=
+github.com/lordofbuckwheat/goinsta/v2 v2.5.1/go.mod h1:C0gq5x2xB3wbKV9u+XnmWhoCIpTZysXtH817RVmd/BI=
+github.com/lordofbuckwheat/goinsta/v2 v2.5.2 h1:/3ky05We/3PFnplHw90jDb6flQjiXpyL2ZKXoT54ab0=
+github.com/lordofbuckwheat/goinsta/v2 v2.5.2/go.mod h1:C0gq5x2xB3wbKV9u+XnmWhoCIpTZysXtH817RVmd/BI=
