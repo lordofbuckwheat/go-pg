@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -12,5 +11,4 @@ func main() {
 		panic("failed to connect database")
 	}
 	defer func() {_ = db.Close()}()
-	fmt.Println("1")
 }
