@@ -33,5 +33,6 @@ func main() {
 		fmt.Println("item", len(media.Items), media.Error())
 		i++
 	}
-	fmt.Println("2")
+	fmt.Println("12")
+	fmt.Println("3")
 }
