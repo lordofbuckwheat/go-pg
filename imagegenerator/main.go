@@ -16,7 +16,7 @@ type Size struct {
 }
 
 func download(size Size, color color.RGBA) {
-	var fileName = fmt.Sprintf("images/%04dx%04d", size.Width, size.Height)
+	var fileName = fmt.Sprintf("images/%04dx%04d.jpg", size.Width, size.Height)
 	if _, err := os.Stat(fileName); err != nil && !os.IsNotExist(err) {
 		panic(err)
 	} else if err == nil {
