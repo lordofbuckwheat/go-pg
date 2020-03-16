@@ -29,10 +29,10 @@ func main() {
 			eg.Go(func() error {
 				return Transaction(func(m *NewModel) error {
 					fmt.Println("transaction started", i)
-					if _, err := m.DB.Exec("SELECT id FROM users"); err != nil {
+					/*if _, err := m.DB.Exec("SELECT id FROM users"); err != nil {
 						return errors.WithStack(err)
 					}
-					fmt.Println("query executed", i)
+					fmt.Println("query executed", i)*/
 					m.OnAfterCommit(func() error {
 						fmt.Println("transaction finished", i)
 						return nil
