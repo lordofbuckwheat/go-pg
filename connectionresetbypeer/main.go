@@ -49,6 +49,8 @@ func main() {
 			panic(err)
 		}
 	}
+	fmt.Println("done")
+	<-make(chan struct{})
 }
 
 type NewModel struct {
